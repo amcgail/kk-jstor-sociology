@@ -6,7 +6,7 @@ from lxml.etree import _ElementTree as ElementTree
 from lxml import etree
 recovering_parser = etree.XMLParser(recover=True)
 
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 from pathlib import Path
 from collections import Counter, defaultdict
@@ -416,49 +416,6 @@ class Document:
     def __getitem__(self, item):
         return self.metadata[item]
 
-    
-
-_zp_cache = {}
-
-
-def doi2xml(zipdir, doi):
-    zf, fn, fn2 = doi2fn(zipdir, doi)
-
-    archive = ZipFile(zf, 'r')
-    return (
-        archive.read(fn),
-        archive.read(fn2)
-    )
-
-def load_zd(zipdir):
-        zipfiles = list(Path(zipdir).glob("*.zip"))
-
-        zret = defaultdict(set)
-
-        for zf in zipfiles:
-            archive = ZipFile(zf, 'r')
-            files = archive.namelist()
-
-            for fn in files:
-                if 'ocr/' in fn or 'ngram/' in fn:
-                    continue
-
-                fn2 = fn.replace("metadata", "ocr").replace(".xml", ".txt")
-
-                mydoi = fn2doi(fn)
-                zret[ mydoi ] = (zf, fn, fn2)
-
-        _zp_cache[zipdir] = zret
-
-def doi2fn(zipdir, doi):
-    fn = "journal-article-%s.txt" % doi.replace("/", "_")
-
-    if zipdir not in _zp_cache:
-        load_zd(zipdir)
-
-    return _zp_cache[zipdir][ doi ]
-
-
 def fn2doi(fn):
     my_name = ".".join(fn.split(".")[:-1])
     doi = my_name.split("-")[-1].replace("_", "/")
@@ -539,6 +496,7 @@ def title_looks_researchy(lt):
 
 def doc_iterator(jstor_zip_base, research_limit=True, SKIP_N=None, MAX_N=None):
     zipfiles = list(Path(jstor_zip_base).glob("*.zip"))
+    print(f"Found files {', '.join([x.name for x in zipfiles])}")
 
     NDOC = _zip_read_N(zipfiles)
 
