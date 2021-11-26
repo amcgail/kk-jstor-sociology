@@ -1,6 +1,0 @@
-jupyterlab
-nltk
-wosfile
-matplotlib
-numpy
-lxml

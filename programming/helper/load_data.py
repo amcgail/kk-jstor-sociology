@@ -8,10 +8,10 @@ from nltk.tokenize import word_tokenize
 stop_english = stopwords.words('english')
 stop_english.extend(('say', 'says', 'saying', 'said', 'new', 'would', 'want', 'wanted', 'wants', 'wanting', 'still', 'must', 'also', 'time', 'year', 'however', 'first', 'university', 'research', 'analysis', 'study', 'journal', 'press', 'number', 'group', 'groups', 'among', 'sociology', 'table', 'different', 'less', 'that', 'one', 'may', 'two', 'percent', 'use', 'within', 'york', 'see', 'thus', 'high', 'level', 'well', 'three', 'data'))
 
-### Econ articles
+# Econ articles ------------------------------------------------------------ #
 
-#files = glob.glob("../data/wos-econ/econ-wos*.txt") # wos files
-files = list(glob.glob("/home/alec/Downloads/econ wos/**/*.txt")) # wos files
+files = glob.glob("./../../data/wos-econ/econ-wos*.txt") # wos files
+#files = list(glob.glob("/home/alec/Downloads/econ wos/**/*.txt")) # wos files
 print(len(files), 'files')
 
 wos_econ = []
@@ -34,7 +34,9 @@ for rec in wosfile.records_from(files):
 # for rec in wosfile.records_from(files):
 #     wos_econ.append(dict(rec)) # everything
 
-### Soc articles
+# Soc articles ------------------------------------------------------------- #
+# - sociology articles have a different format, which is why I load them
+#   differently than econ
 
 while True:
     # decrease the maxInt value by factor 10 
@@ -47,7 +49,7 @@ while True:
         
 def reciter():
 
-    for fn in Path("../data/wos-soc").glob("**/*.txt"):
+    for fn in Path("./../../data/wos-soc").glob("**/*.txt"):
         with fn.open(encoding='utf8') as f:
             rs = list(DictReader(f, delimiter='\t'))
 
