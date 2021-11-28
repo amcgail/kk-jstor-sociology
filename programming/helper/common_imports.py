@@ -1,4 +1,4 @@
-from counter import counter
+from count_helper import counter
 import numpy as np
 from matplotlib import pyplot as plt
 import glob
