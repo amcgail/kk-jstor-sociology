@@ -14,3 +14,5 @@ from pathlib import Path
 
 from random import sample
 import pickle
+
+BASE = str(Path(__file__).parent.parent.absolute())

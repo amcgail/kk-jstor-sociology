@@ -10,7 +10,8 @@ stop_english.extend(('say', 'says', 'saying', 'said', 'new', 'would', 'want', 'w
 
 # Econ articles ------------------------------------------------------------ #
 
-files = glob.glob("./../data/wos-econ/econ-wos*.txt") # wos files
+files = list(Path(BASE).glob("data/wos-econ/**/*.txt")) # wos files
+#print(BASE)
 #files = list(glob.glob("/home/alec/Downloads/econ wos/**/*.txt")) # wos files
 print(len(files), 'files')
 
