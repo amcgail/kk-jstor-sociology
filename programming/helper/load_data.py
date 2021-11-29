@@ -10,7 +10,7 @@ stop_english.extend(('say', 'says', 'saying', 'said', 'new', 'would', 'want', 'w
 
 # Econ articles ------------------------------------------------------------ #
 
-files = glob.glob("./../../data/wos-econ/econ-wos*.txt") # wos files
+files = glob.glob("./../data/wos-econ/econ-wos*.txt") # wos files
 #files = list(glob.glob("/home/alec/Downloads/econ wos/**/*.txt")) # wos files
 print(len(files), 'files')
 
@@ -49,7 +49,7 @@ while True:
         
 def reciter():
 
-    for fn in Path("./../../data/wos-soc").glob("**/*.txt"):
+    for fn in Path("./../data/wos-soc").glob("**/*.txt"):
         with fn.open(encoding='utf8') as f:
             rs = list(DictReader(f, delimiter='\t'))
 
