@@ -55,3 +55,17 @@ def count(counter, values, terms, combinations):
                 val['t1'] = t1
                 val['t2'] = t2
                 counter.cnt(val, combinations=term_pair_combinations)
+                
+def tryInt(string, flt=False):
+    """This function tries to create an integer out of a string and returns 0 if that is not possible"""
+    if(flt): 
+        try: return(float(string))
+        except: return(0)
+    else: 
+        try: return(int(string))
+        except: return(0)
+
+def tryStr(string):
+    """This function tries to lower the case of a string a returns an empty string if that is not possible"""
+    try: return(string.lower())
+    except: return("")
