@@ -8,17 +8,19 @@ from nltk.tokenize import word_tokenize
 stop_english = stopwords.words('english')
 stop_english.extend(('say', 'says', 'saying', 'said', 'new', 'would', 'want', 'wanted', 'wants', 'wanting', 'still', 'must', 'also', 'time', 'year', 'however', 'first', 'university', 'research', 'analysis', 'study', 'journal', 'press', 'number', 'group', 'groups', 'among', 'sociology', 'table', 'different', 'less', 'that', 'one', 'may', 'two', 'percent', 'use', 'within', 'york', 'see', 'thus', 'high', 'level', 'well', 'three', 'data'))
 
+print("Loading articles...")
+
 # Econ articles ------------------------------------------------------------ #
 
 files = list(Path(BASE).glob("data/wos-econ/**/*.txt")) # wos files
 #print(BASE)
 #files = list(glob.glob("/home/alec/Downloads/econ wos/**/*.txt")) # wos files
-print(len(files), 'files')
 
 wos_econ = []
 i=0
 for rec in wosfile.records_from(files):
-    title = re.findall("[A-Za-z]+", rec.get("TI"))
+    title = rec.get("TI").lower()
+    title = re.findall("[A-Za-z]+", title) # splits the string into a list
     title = [word for word in title if word not in stop_english]
     title = [word for word in title if len(word)>3]
     wos_econ.append({
@@ -63,7 +65,8 @@ def reciter():
 wos_soc = []
 i=len(wos_econ)+1
 for rec in reciter():
-    title = re.findall("[A-Za-z]+", rec["TI"])
+    title = rec["TI"].lower()
+    title = re.findall("[A-Za-z]+", title)
     title = [word for word in title if word not in stop_english]
     title = [word for word in title if len(word)>3]
     wos_soc.append({
