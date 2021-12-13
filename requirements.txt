@@ -1,0 +1,8 @@
+wosfile
+scipy
+matplotlib
+seaborn
+pandas
+numpy
+nltk
+lxml
