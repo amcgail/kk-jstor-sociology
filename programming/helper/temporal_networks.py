@@ -92,14 +92,15 @@ def chi_stat(counter, t1, t2, yfrom, yto):
     return sgn*p
 
 
-# computes the temporal networks for the given algorithm
+# computes the very limited "networks" for the given algorithm
+# these are literally just stars, what rels did the focal word have at that time?
 def get_tnets( 
     counter, focal, 
     kind='chi2',
     YWINDOW = 5, YSTEP = 5,
     YMIN = 1920, YMAX = 2020,
     pcut = None, pscale=True,
-    topN = 15
+    topN = None
 ):
     if kind=='chi2':
         fn = chi_stat
@@ -129,13 +130,81 @@ def get_tnets(
     mat[ mat >= 1 ] = np.nan
     
     print(f'max accepted p-value: {mat[~np.isnan(mat)].max()}')
-    mat = mat / mat[~np.isnan(mat)].max()
+    
+    # this scaling step is a bit counter-productive
+    # what is returned is just -log(pvalue)
+    #mat = mat / mat[~np.isnan(mat)].max()
+    
     mat = -np.log( mat )
     mat[np.isnan(mat)] = 0
     
     return mat 
 
 
+# computes the full temporal networks for the given algorithm
+def get_full_tnets( 
+    counter, focal, 
+    kind='chi2',
+    YWINDOW = 5, YSTEP = 5,
+    YMIN = 1920, YMAX = 2020,
+    pcut = None, pscale=False,
+    topN = None, include_ego=True
+):
+    
+    if kind=='chi2':
+        fn = chi_stat
+    else:
+        raise Exception("Don't know this kind: ", kind)
+    
+    tn_basic = get_tnets(counter=counter,
+                         focal=focal,
+                         kind=kind,
+                         YWINDOW=YWINDOW,
+                         YSTEP=YSTEP,
+                         YMIN=YMIN,
+                         YMAX=YMAX,
+                         pcut=pcut,
+                         pscale=pscale,
+                         topN=topN)
+
+    if pcut is not None:
+        if pscale:
+            n_tests = (YMAX-YMIN)//YSTEP
+            pcut /= n_tests
+    
+    mats = []
+    
+    for i in range((YMAX-YMIN)//YSTEP):
+        terms = np.where(tn_basic[i,:]>0)[0]
+        if include_ego:
+            terms += [counter.terms.index(focal)]
+
+        mat = np.zeros( (tn_basic.shape[1], tn_basic.shape[1]) )
+
+        # now that we've narrowed to an egonet, explore it :)
+        for t1 in terms:
+            for t2 in terms:
+                if t1 >= t2: # not directional
+                    continue
+
+                c = chi_stat(counter, counter.terms[ t1 ], cc_econ.terms[ t2 ], YMIN+YSTEP*i, YMIN+YSTEP*(i+1))
+                
+                if c > 1: # how chi_stat indicates there's not enough data
+                    continue
+                    
+                if pcut is not None and c >= pcut:
+                    continue
+
+                if c == 0: # apparently p-values go this low o.o
+                    c = 1e-300
+                    
+                ret = -np.log( c )
+                mat[t1,t2] = ret
+    
+        mats.append(mat)
+        
+    return np.array(mats)
+    
 
 
 def simularity_sort(mat, axis=0, metric='euclidean'):
