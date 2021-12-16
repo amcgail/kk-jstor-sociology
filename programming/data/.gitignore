@@ -3,3 +3,4 @@
 **/*.pickle
 **/*.zip
 **/*.txt
+**/*.bin.gz
